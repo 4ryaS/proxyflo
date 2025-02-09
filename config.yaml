@@ -18,10 +18,10 @@ server:
 
   rules:
     - path: /
-    upstreams:
-      - node1
-      - node2
+      upstreams:
+        - node1
+        - node2
 
     - path: /api
-    upstreams:
-      - node2
+      upstreams:
+        - node2
