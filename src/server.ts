@@ -1,7 +1,7 @@
 import cluster, { Worker } from "node:cluster";
 import http from "node:http";
 import { ConfigSchemaType, root_config_schema } from "./schema/config-schema";
-import { worker_message_schema, WorkerMessageType, WorkerMessageResponseType } from "./schema/server-schema";
+import { worker_message_schema, WorkerMessageType, WorkerMessageResponseType, worker_message_response_schema } from "./schema/server-schema";
 
 interface CreateServerConfig {
     port: number,
@@ -38,6 +38,20 @@ export async function create_server(config: CreateServerConfig) {
             
             // send a message to the worker
             worker.send(JSON.stringify(payload));
+
+            worker.on('message', async (worker_response: string) => {
+                const response = await worker_message_response_schema.parseAsync(JSON.parse(worker_response));
+                if (response.error_code) {
+                    res.writeHead(parseInt(response.error_code));
+                    res.end(response.error);
+                    return;
+                }
+                else {
+                    res.writeHead(200);
+                    res.end(response.data);
+                    return;
+                }
+            });
         });
 
         server.listen(port, () => {
@@ -67,16 +81,18 @@ export async function create_server(config: CreateServerConfig) {
                 if (process.send) return (JSON.stringify(response));
             }
 
-            http.request({ host: upstream?.url, path: request_url }, (proxy_response) => {
+            const request = http.request({ host: upstream?.url, path: request_url }, (proxy_response) => {
                 let body = '';
                 proxy_response.on('data', (chunk) => {
-                    body += body;
+                    body += chunk;
                 });
 
                 proxy_response.on('end', () => {
                     const response: WorkerMessageResponseType = { data: body };
                     if (process.send) return (JSON.stringify(response));
-                })
+                });
+
+                request.end();
             });
 
         });

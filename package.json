@@ -8,18 +8,10 @@
     "dev": "tsc-watch --onSuccess \"npm start\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/4ryaS/proxyflo.git"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/4ryaS/proxyflo/issues"
-  },
-  "homepage": "https://github.com/4ryaS/proxyflo#readme",
   "description": "",
   "devDependencies": {
     "@types/node": "^22.13.1",
