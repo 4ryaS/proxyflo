@@ -1,5 +1,5 @@
 server:
-  listen: 8080
+  listen: 8080 # port on which it will listen to the proxy server
   workers: 4 # this depends on the number of cores your cpu has
   
   upstreams:

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z, infer } from 'zod';
 
 const upstream_schema = z.object({
     id: z.string(),
@@ -26,3 +26,5 @@ const server_schema = z.object({
 export const root_config_schema = z.object({
     server: server_schema,
 });
+
+export type ConfigSchemaType = z.infer<typeof root_config_schema>;
