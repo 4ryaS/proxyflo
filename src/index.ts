@@ -1,5 +1,5 @@
 import { program } from "commander";
-import { parse_yaml_config, validate_config } from "./parser";
+import { parse_yaml_config, validate_config } from "./utils/parser";
 import os from "node:os";
 import { create_server } from "./server";
 

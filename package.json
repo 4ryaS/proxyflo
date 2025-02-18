@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node build/index --config config.yaml",
+    "start": "node build/index --config ./config/config.yaml",
     "build": "tsc -p .",
     "dev": "tsc-watch --onSuccess \"npm start\"",
     "test": "echo \"Error: no test specified\" && exit 1"

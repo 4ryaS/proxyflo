@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import { parse } from 'yaml';
-import { root_config_schema } from './schema/config-schema';
+import { root_config_schema } from '../schema/config-schema';
 
 export async function parse_yaml_config(file_path: string) {
     const config_file_content = await fs.readFile(file_path, 'utf8');

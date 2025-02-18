@@ -1,7 +1,7 @@
 import cluster, { Worker } from "node:cluster";
 import http from "node:http";
 import { ConfigSchemaType, root_config_schema } from "./schema/config-schema";
-import { worker_message_schema, WorkerMessageType } from "./schema/server-schema";
+import { worker_message_schema, WorkerMessageType, WorkerMessageResponseType } from "./schema/server-schema";
 
 interface CreateServerConfig {
     port: number,
@@ -29,7 +29,6 @@ export async function create_server(config: CreateServerConfig) {
             
             if (!worker) throw new Error("Worker not found!");
 
-
             const payload: WorkerMessageType = {
                 request_type: 'HTTP',
                 headers: req.headers,
@@ -40,6 +39,7 @@ export async function create_server(config: CreateServerConfig) {
             // send a message to the worker
             worker.send(JSON.stringify(payload));
         });
+
         server.listen(port, () => {
             console.log(`Proxyflo Server 🎐 Listening On Port: ${port}`);
         });
@@ -52,6 +52,33 @@ export async function create_server(config: CreateServerConfig) {
             // console.log("Worker: ", message);
             const validated_message = await worker_message_schema.parseAsync(JSON.parse(message));
             const request_url = validated_message.url;
+            const rule = config.server.rules.find(rule => rule.path === request_url);
+
+            if (!rule) {
+                const response: WorkerMessageResponseType = { error: "Rule not found!", error_code: '404' };
+                if (process.send) return (JSON.stringify(response));
+            }
+
+            const upstream_id = rule?.upstreams[0];
+            const upstream = config.server.upstreams.find(upstream => upstream.id === upstream_id);
+
+            if (!upstream) {
+                const response: WorkerMessageResponseType = { error: "Upstream not found!", error_code: '500' };
+                if (process.send) return (JSON.stringify(response));
+            }
+
+            http.request({ host: upstream?.url, path: request_url }, (proxy_response) => {
+                let body = '';
+                proxy_response.on('data', (chunk) => {
+                    body += body;
+                });
+
+                proxy_response.on('end', () => {
+                    const response: WorkerMessageResponseType = { data: body };
+                    if (process.send) return (JSON.stringify(response));
+                })
+            });
+
         });
     }
 }
