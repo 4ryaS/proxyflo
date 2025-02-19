@@ -13,7 +13,7 @@ const header_schema = z.object({
 const rule_schema = z.object({
     path: z.string(),
     upstreams: z.array(z.string()),
-})
+});
 
 const server_schema = z.object({
     listen: z.number(),

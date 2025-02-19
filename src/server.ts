@@ -7,7 +7,7 @@ interface CreateServerConfig {
     port: number,
     worker_count: number,
     config: ConfigSchemaType,
-}
+};
 
 export async function create_server(config: CreateServerConfig) {
     const { worker_count, port } = config;

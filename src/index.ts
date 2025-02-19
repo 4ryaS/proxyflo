@@ -13,7 +13,7 @@ async function main() {
             await parse_yaml_config(options.config)
         );
         // console.log(validated_config);
-        await create_server({ port: validated_config.server.listen, worker_count: validated_config.server.workers ?? os.cpus().length, config: validated_config })
+        await create_server({ port: validated_config.server.listen, worker_count: validated_config.server.workers ?? os.cpus().length, config: validated_config });
     }
 }
 
